@@ -1,35 +1,33 @@
+import argparse
 import threading
 
 from app.core.jarvis import Jarvis
-from app.ui.splash import JarvisSplash
-from app.ui.core_ui import JarvisCoreUI
 
 
-def start_jarvis():
+def start_voice():
+    # La interfaz gráfica solo se carga en modo voz
+    from app.ui.core_ui import JarvisCoreUI
+    from app.ui.splash import JarvisSplash
 
-    jarvis = Jarvis()
+    def start_jarvis():
 
-    ui = JarvisCoreUI(
-        jarvis
-    )
+        jarvis = Jarvis(mode="voz")
 
-    # Conectar el sistema de voz de JARVIS
-    # con la interfaz principal.
-    
+        ui = JarvisCoreUI(
+            jarvis
+        )
 
-    def run_jarvis():
+        # Conectar JARVIS con la interfaz principal.
+        # Tkinter solo puede actualizarse desde su propio hilo.
+        jarvis.on_command = lambda text: ui.root.after(0, ui.show_command, text)
+        jarvis.on_response = lambda text: ui.root.after(0, ui.show_response, text)
 
-        jarvis.start()
+        threading.Thread(
+            target=jarvis.start,
+            daemon=True
+        ).start()
 
-    threading.Thread(
-        target=run_jarvis,
-        daemon=True
-    ).start()
-
-    ui.show()
-
-
-def start_system():
+        ui.show()
 
     splash = JarvisSplash(
         on_complete=start_jarvis
@@ -38,6 +36,21 @@ def start_system():
     splash.show()
 
 
+def start_text():
+    Jarvis(mode="texto").start()
+
+
 if __name__ == "__main__":
 
-    start_system()
+    parser = argparse.ArgumentParser(description="YAELCORE-OS")
+    parser.add_argument(
+        "--texto",
+        action="store_true",
+        help="Chat por teclado en la consola (sin voz ni interfaz)",
+    )
+    args = parser.parse_args()
+
+    if args.texto:
+        start_text()
+    else:
+        start_voice()
