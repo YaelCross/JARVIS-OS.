@@ -1,0 +1,27 @@
+# Núcleo
+python-dotenv
+requests
+beautifulsoup4
+psutil
+
+# Cerebro (LLM)
+openai
+anthropic
+
+# Voz (Windows)
+SpeechRecognition
+PyAudio
+pywin32
+
+# Control de apps, teclado, ratón y pantalla (Windows)
+pygetwindow
+pyautogui
+pyperclip
+
+# Interfaz (pantalla de inicio con video)
+pillow
+opencv-python
+
+# Lectura de documentos
+python-docx
+pypdf
